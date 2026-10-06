@@ -1,0 +1,47 @@
+{
+  "deepseek-flash": {
+    "capabilities": [
+      "text_generation",
+      "chat_history"
+    ],
+    "options": [
+      "functionDeclarations",
+      "inputModalities"
+    ],
+    "features": {
+      "text": true,
+      "vision": true,
+      "tools": true,
+      "structured": true,
+      "reasoning": false,
+      "embedding": false,
+      "image": false
+    },
+    "contextLength": 1000000,
+    "optionsAbsent": [
+      "outputSchema"
+    ]
+  },
+  "deepseek-v4-pro": {
+    "capabilities": [
+      "text_generation",
+      "chat_history"
+    ],
+    "options": [
+      "functionDeclarations"
+    ],
+    "features": {
+      "text": true,
+      "vision": false,
+      "tools": true,
+      "structured": true,
+      "reasoning": false,
+      "embedding": false,
+      "image": false
+    },
+    "contextLength": 1000000,
+    "optionsAbsent": [
+      "outputSchema"
+    ]
+  }
+}
