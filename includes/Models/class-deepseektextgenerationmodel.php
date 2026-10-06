@@ -129,6 +129,7 @@ class DeepSeekTextGenerationModel extends AbstractOpenAiCompatibleTextGeneration
 	 * @since 1.0.0
 	 *
 	 * @param array<int, Message> $prompt Prompt messages.
+	 * @phpstan-param list<Message> $prompt
 	 * @param callable            $on_event Receives each normalized stream event.
 	 * @return GenerativeAiResult Aggregated result.
 	 * @throws RuntimeException When streaming is unavailable or the transfer fails.
@@ -314,6 +315,19 @@ class DeepSeekTextGenerationModel extends AbstractOpenAiCompatibleTextGeneration
 			}
 		};
 
+		/*
+		 * wp_json_encode() returns false on data it cannot encode, malformed UTF-8 in
+		 * post content being the realistic case. Passing that to wp_remote_post sends
+		 * an empty body and the provider answers with a puzzling error, so say what
+		 * actually went wrong instead.
+		 */
+		$body = wp_json_encode( $params );
+
+		if ( false === $body ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception text is not rendered directly.
+			throw new RuntimeException( 'The streaming request could not be encoded: ' . json_last_error_msg() );
+		}
+
 		add_action( 'requests-request.progress', $progress, 10, 1 );
 
 		try {
@@ -321,7 +335,7 @@ class DeepSeekTextGenerationModel extends AbstractOpenAiCompatibleTextGeneration
 				$url,
 				array(
 					'headers'     => $headers,
-					'body'        => wp_json_encode( $params ),
+					'body'        => $body,
 					'timeout'     => (int) ceil( DeepSeekSettings::get_text_request_timeout() ),
 					'redirection' => 0,
 					'httpversion' => '1.1',

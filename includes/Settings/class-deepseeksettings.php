@@ -348,7 +348,20 @@ class DeepSeekSettings {
 			$sanitized[ $key ] = $submitted;
 		}
 
-		$this->save_api_key( $value );
+		$stored = $this->save_api_key( $value );
+
+		/*
+		 * The credential itself is read back from the AI Client, which only has it
+		 * once WordPress has handed it over. This records that a key was stored, so
+		 * the screen can still say so, and still offer to remove it, on a request
+		 * where the credential is not readable.
+		 */
+		if ( null === $stored ) {
+			$sanitized['has_api_key'] = ! empty( $existing['has_api_key'] );
+		} else {
+			$sanitized['has_api_key'] = $stored;
+		}
+
 		$this->set_request_authentication();
 		$this->invalidate_model_cache();
 
@@ -408,7 +421,7 @@ class DeepSeekSettings {
 	 */
 	public function render_api_key_field(): void {
 		$override = self::get_api_key_override();
-		$has_key  = '' !== self::get_saved_api_key();
+		$has_key  = self::has_stored_api_key();
 		?>
 
 		<input
@@ -1047,25 +1060,27 @@ class DeepSeekSettings {
 	 *
 	 * @param array<string, mixed> $value Submitted settings values.
 	 */
-	private function save_api_key( array $value ): void {
+	private function save_api_key( array $value ): ?bool {
 		if ( ! empty( $value['clear_api_key'] ) ) {
 			update_option( self::api_key_option(), '' );
 			$this->set_request_authentication( self::get_api_key_override() );
-			return;
+			return false;
 		}
 
 		if ( ! isset( $value['api_key'] ) ) {
-			return;
+			return null;
 		}
 
 		$api_key = sanitize_text_field( (string) $value['api_key'] );
 		if ( '' === $api_key ) {
-			return;
+			return null;
 		}
 
 		update_option( self::api_key_option(), $api_key );
 		$override = self::get_api_key_override();
 		$this->set_request_authentication( '' !== $override ? $override : $api_key );
+
+		return true;
 	}
 
 	/**
@@ -1193,6 +1208,29 @@ class DeepSeekSettings {
 		$authentication = $registry->getProviderRequestAuthentication( DeepSeekProfile::id() );
 
 		return $authentication instanceof ApiKeyRequestAuthentication ? $authentication->getApiKey() : '';
+	}
+
+	/**
+	 * Reports whether an API key has been stored for this connector.
+	 *
+	 * Separate from the key itself: the credential comes back from the AI Client,
+	 * which WordPress only populates while it is wiring connectors, so a site with
+	 * AI support switched off reads no key even though one is saved. This answers
+	 * the question the settings screen actually asks, without reading the
+	 * credential out of the option.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @return bool True when a key is stored.
+	 */
+	public static function has_stored_api_key(): bool {
+		if ( '' !== self::get_saved_api_key() ) {
+			return true;
+		}
+
+		$settings = self::get_settings();
+
+		return ! empty( $settings['has_api_key'] );
 	}
 
 	/**

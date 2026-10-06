@@ -14,7 +14,7 @@ every provider's credentials live in one place. Core ships OpenAI, Anthropic and
 Google. This plugin adds DeepSeek to that same screen, so anything built on
 `wp_ai_client_prompt()` can use it without knowing anything about this plugin.
 
-Version 1.0.0 · Developer: [Zactonz Technologies](https://zactonz.com/)
+Version 1.0.1 · Developer: [Zactonz Technologies](https://zactonz.com/)
 
 **Documentation:** [developers.zactonz.com](https://developers.zactonz.com/wordpress/plugins/zactonz-ai-connector-for-deepseek/) ·
 [Releases](https://github.com/zactonz/zactonz-ai-connector-for-deepseek/releases) ·

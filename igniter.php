@@ -5,7 +5,7 @@
  * Description:       Adds a DeepSeek connector to Settings > Connectors for the WordPress AI Client, with thinking-mode control.
  * Requires at least: 7.0
  * Requires PHP:      7.4
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Zactonz Technologies
  * Author URI:        https://zactonz.com/
  * License:           GPL-2.0-or-later
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'ZCTZ_DEEPSEEK_MIN_PHP_VERSION', '7.4' );
 define( 'ZCTZ_DEEPSEEK_MIN_WP_VERSION', '7.0' );
-define( 'ZCTZ_DEEPSEEK_VERSION', '1.0.0' );
+define( 'ZCTZ_DEEPSEEK_VERSION', '1.0.1' );
 define( 'ZCTZ_DEEPSEEK_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ZCTZ_DEEPSEEK_PLUGIN_FILE', __FILE__ );
 
